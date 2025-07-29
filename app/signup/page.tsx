@@ -1,6 +1,5 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -9,29 +8,42 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Building2 } from "lucide-react"
-import Link from "next/link" // 👈 Make sure to import Link
+import Link from "next/link"
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setIsLoading(true)
 
-    if (!email || !password) {
-      setError("Please enter both email and password")
+    if (!email || !password || !confirmPassword) {
+      setError("All fields are required")
       setIsLoading(false)
       return
     }
 
     if (!email.includes("@")) {
-      setError("Please enter a valid email address")
+      setError("Enter a valid email")
+      setIsLoading(false)
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters")
+      setIsLoading(false)
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
       setIsLoading(false)
       return
     }
@@ -54,12 +66,12 @@ export default function LoginPage() {
               <span className="text-2xl font-bold">ERP System</span>
             </div>
           </div>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+          <CardTitle className="text-2xl">Create an Account</CardTitle>
+          <CardDescription>Sign up to start using the system</CardDescription>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-4">
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -80,42 +92,47 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-[70%] px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Creating account..." : "Sign up"}
             </Button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo credentials: Any email and password will work</p>
-          </div>
-
-          {/* 👇 Sign Up Button */}
           <div className="mt-4 text-center text-sm">
-            New user?{" "}
-            <Link href="/signup" className="text-primary hover:underline font-medium">
-              Create an account
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline font-medium">
+              Sign in
             </Link>
           </div>
         </CardContent>
